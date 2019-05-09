@@ -59,7 +59,8 @@ print(chave)
 #print(chave)
 print("UDP server up and listening")
 
-
+is_shared_key_set = False
+should_send = True
 
 # Listen for incoming datagrams
 
@@ -77,6 +78,8 @@ while(True):
     print(clientMsg)
     print(clientIP)
 
+
+
     if (message.decode() == "Join"):
         UDPServerSocket.sendto(public_key_send, address)
     elif (len(message.decode()) == 64):
@@ -84,3 +87,8 @@ while(True):
         arduino_public_key = X25519PublicKey.from_public_bytes( data = arduino_public_bytes)
         shared_key = private_key.exchange(arduino_public_key)
         print(shared_key.hex())
+        is_shared_key_set = True
+
+    if (is_shared_key_set and should_send):
+        UDPServerSocket.sendto(str.encode("send"), address)
+        should_send = False
