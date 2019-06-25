@@ -54,3 +54,7 @@ print("Decrypt: " + str(time_end.microsecond - time_start.microsecond))
 #gedit arquivo.txt
 #time openssl enc -aes-256-cbc -salt -in arquivo.txt -out arquivo.txt.enc -pass file:private.pem
 #time openssl rsautl -decrypt -inkey private.pem -in arquivo.txt.enc -out teste.txt
+#time openssl dgst -sha256 arquivo.txt
+#time openssl dgst -sha512 arquivo.txt
+#time openssl dgst -sha3-256 arquivo.txt
+#time openssl dgst -sha3-512 arquivo.txt
