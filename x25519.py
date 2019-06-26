@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PublicKey
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import serialization
 import socket
+import datetime
 
 localPort   = 40001
 
@@ -20,13 +21,16 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 UDPServerSocket.bind(("", localPort))
 
-
+time_start = datetime.datetime.now()  #TIME COUNT
 # Generate a private key for use in the exchange.
 private_key = X25519PrivateKey.generate()
 #private_key_bytes = bytes.fromhex('802485554bee3688f8e33567b304080857cabd313e6412fdf610d56037359148')
 #private_key = X25519PrivateKey.from_private_bytes(
 #    data = private_key_bytes
 #)
+time_end = datetime.datetime.now() #TIME COUNT
+time_total = time_end - time_start
+
 private_bytes = private_key.private_bytes(
     encoding=serialization.Encoding.Raw,
     format=serialization.PrivateFormat.Raw,
@@ -38,7 +42,11 @@ chave = private_bytes.hex()
 print("Chave Privada a")
 print(chave)
 
+time_start = datetime.datetime.now()  #TIME COUNT
 public_key = private_key.public_key()
+time_end = datetime.datetime.now() #TIME COUNT
+time_total = time_total + (time_end - time_start)
+
 public_bytes = public_key.public_bytes(
     encoding=serialization.Encoding.Raw,
     format=serialization.PublicFormat.Raw
@@ -74,13 +82,14 @@ while(True):
 
     clientMsg = "Message from Client:{}".format(message)
     clientIP  = "Client IP Address:{}".format(address)
-    
+    print("Time Total: " + str(time_total))
     print(clientMsg)
     print(clientIP)
 
 
 
     if (message.decode() == "Join"):
+        time_start = datetime.datetime.now()  #TIME COUNT
         UDPServerSocket.sendto(public_key_send, address)
     elif (len(message.decode()) == 64):
         arduino_public_bytes = bytes.fromhex(message.decode())
@@ -92,3 +101,7 @@ while(True):
     if (is_shared_key_set and should_send):
         UDPServerSocket.sendto(str.encode("send"), address)
         should_send = False
+        time_end = datetime.datetime.now() #TIME COUNT
+        time_total = time_total + (time_end - time_start)
+
+
